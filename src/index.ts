@@ -12,9 +12,9 @@ mongoose.connect(db_url).then(() => {
     app.use(express.json())
     app.use(routes)
 
-    app.listen(process.env.PORT, () =>{ 
-    console.log("Server started")
-})
+    app.listen(process.env.PORT, () => {
+        console.log("Server started")
+    })
 
 }).catch((error) => {
     console.log(error)
