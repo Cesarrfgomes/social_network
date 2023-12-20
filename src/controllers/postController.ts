@@ -29,7 +29,21 @@ export class PostController {
 
     async get(req: Request, res: Response) {
         try {
-            const posts = await Post.find()
+            const posts = await Post.aggregate([
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'user_id',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                {
+                    $addFields: {
+                        user: { $first: '$user' }
+                    }
+                }
+            ])
             return res.status(200).json(posts)
         } catch (error) {
             return res.status(500).json({ message: "Erro interno do servidor." })
