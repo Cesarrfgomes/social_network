@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import bcrypt from 'bcrypt'
 import User from '../models/User'
 
 export class UserController {
@@ -37,13 +36,11 @@ export class UserController {
                 return res.status(400).json({ message: "Username ou email já está em uso." })
             }
 
-            const encryptedPassword = await bcrypt.hash(password, 10)
 
             const newUser = await User.create({
                 name,
                 email,
                 username,
-                password: encryptedPassword,
                 photo,
                 description,
                 isActive: true,
@@ -73,13 +70,10 @@ export class UserController {
                 return res.status(400).json({ message: "Username ou email já está em uso." })
             }
 
-            const encryptedPassword = await bcrypt.hash(password, 10)
-
             await User.updateOne({ _id: id }, {
                 name,
                 email,
                 username,
-                password: encryptedPassword,
                 photo,
                 description
             })
