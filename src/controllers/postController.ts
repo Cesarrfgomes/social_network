@@ -2,16 +2,26 @@ import { Request, Response } from 'express'
 import Post from '../models/Post'
 import User from '../models/User'
 import { Types } from 'mongoose'
+import { uploadFile } from '../services/upload'
 
 export class PostController {
     async create(req: Request, res: Response) {
-        const { user_id, description, images } = req.body
+        const { user_id, description } = req.body
+
         try {
             const user = await User.findById(user_id)
 
             if (!user) {
                 return res.status(404).json({ message: "O usuário não foi encontrado!" })
             }
+
+            const files = req.files as Express.Multer.File[]
+
+            const images = await Promise.all(files.map(async (file) => {
+                const img = await uploadFile(`postagens/${file.originalname}`, file.buffer, file.mimetype)
+
+                return img
+            }))
 
             const newPost = await Post.create({
                 user_id: user._id,
