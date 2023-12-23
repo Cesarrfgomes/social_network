@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
+import bcrypt from 'bcrypt'
 
 export class UserController {
     async get(req: Request, res: Response) {
@@ -13,10 +14,9 @@ export class UserController {
     }
 
     async show(req: Request, res: Response) {
-        const { id } = req.params
-
+        const { _id } = req.user
         try {
-            const user = await User.findById(id)
+            const user = await User.findOne({ _id })
 
             return res.status(200).json(user)
         } catch (error) {
@@ -36,11 +36,13 @@ export class UserController {
                 return res.status(400).json({ message: "Username ou email já está em uso." })
             }
 
+            const encryptedPassword = await bcrypt.hash(password, 10)
 
             const newUser = await User.create({
                 name,
                 email,
                 username,
+                password: encryptedPassword,
                 photo,
                 description,
                 isActive: true,
@@ -70,10 +72,13 @@ export class UserController {
                 return res.status(400).json({ message: "Username ou email já está em uso." })
             }
 
+            const encryptedPassword = await bcrypt.hash(password, 10)
+
             await User.updateOne({ _id: id }, {
                 name,
                 email,
                 username,
+                password: encryptedPassword,
                 photo,
                 description
             })

@@ -6,12 +6,14 @@ import { uploadFile } from '../services/upload'
 
 export class PostController {
     async create(req: Request, res: Response) {
-        const { user_id, description } = req.body
+        const { description } = req.body
+        const { user } = req
+        console.log(user._id)
 
         try {
-            const user = await User.findById(user_id)
+            const userExist = await User.findOne({ _id: user._id })
 
-            if (!user) {
+            if (!userExist) {
                 return res.status(404).json({ message: "O usuário não foi encontrado!" })
             }
 
